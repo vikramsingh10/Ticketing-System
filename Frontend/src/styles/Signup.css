@@ -1,0 +1,153 @@
+.main-container {
+  display: flex;
+  height: 100vh;
+}
+
+.l-section {
+  width: 70%;
+  height:100px;
+  
+  justify-content: flex-start;
+  
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.l-section img {
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  width: 100px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 80px;
+  text-align: start;
+
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.heading h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #333;
+  margin-top: 35px;
+  padding-right: 10px;
+}
+
+.signup-link {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+}
+
+.signup-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+  margin: 0;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid #666666;
+  outline: none;
+  color: #676b5f;
+}
+
+.input-group input:focus {
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+.password-group {
+  position: relative;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  margin-top: 3px;
+}
+
+.checkbox-group label {
+  font-size: 12px;
+  color: #3d3d3d;
+  line-height: 1.4;
+}
+
+.login-button {
+  width: 100%;
+  height: 40px;
+  padding: 8px;
+  background-color: #c3c3c3;
+  border: none;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-button:hover {
+  background-color: #b1afaf;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.success-message {
+  color: green;
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.b-text {
+  color: #676b5f;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 100px;
+  padding-bottom: 20px;
+}
+
+.r-section {
+  width: 30%;
+  height: 820px;
+  background-image: url("../assets/login.png");
+  background-size: cover;
+  background-position: center;
+}

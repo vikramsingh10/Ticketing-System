@@ -1,0 +1,216 @@
+.dashboard-container {
+  display: flex;
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 80px;
+  background-color: #fafbfc;
+  height: 100vh;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #424242;
+  border-right: 1px solid #dcdcdc;
+}
+
+.logoa {
+  width: 40px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.nav-icons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 0;
+  cursor: pointer;
+}
+
+.user-icon {
+  margin-top: auto;
+  padding-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.main-content {
+  padding: 15px;
+  flex: 1;
+  background-color: #fff;
+  height: 100vh;
+  overflow-y: auto;
+}
+.icon-labels {
+  font-size: 12px;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f3f3f3;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  width: 300px;
+  margin: 1rem 0;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  background: transparent;
+  margin-left: 0.5rem;
+  flex: 1;
+}
+
+.search-icon {
+  color: #999;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-weight: 500;
+  color: #888;
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+  color: #184e7f;
+  border-color: #007bff;
+}
+
+.ticket-card {
+  border: 1px solid #eee;
+  padding: 1rem;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 14px;
+  position: relative;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background-color: orange;
+  border-radius: 50%;
+}
+
+.posted-time {
+  position: absolute;
+  right: 100px;
+  color: #999;
+}
+
+.ticket-time {
+  position: absolute;
+  right: 20px;
+  font-weight: 600;
+}
+
+.ticket-message {
+  margin: 1rem 0;
+  font-size: 16px;
+}
+
+.ticket-footer {
+  border-top: 1px solid #e7e7e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  border-radius: 50%;
+}
+
+.user-contact {
+  font-size: 12px;
+  color: #666;
+}
+.user-profile {
+  width: 30px;
+}
+.open-ticket-link {
+  color: #007bff;
+  text-decoration: underline;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0;
+  cursor: pointer;
+  padding: 5px;
+  color: #424242;
+  transition: all 0.3s ease;
+}
+
+.nav-item .material-symbols-light--home-outline,
+.nav-item .bitcoin-icons--message-outline,
+.nav-item .uil--analytics,
+.nav-item .fluent--bot-20-regular,
+.nav-item .ri--team-fill,
+.nav-item .material-symbols-light--settings-outline {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.icon-label {
+  font-size: 10px;
+  color: #424242;
+}
+.user-icon {
+  position: relative;
+}
+
+.logout-btn {
+  position: absolute;
+  top: 30px;
+
+  background-color: #184e7f;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logout-btn button {
+  color: white;
+  background-color: transparent;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  padding-bottom: 4px;
+}
+.ticket-btn{
+  display: flex;
+  flex-direction: column;
+}

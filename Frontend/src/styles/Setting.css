@@ -1,0 +1,102 @@
+.setting-page {
+    padding: 5px;
+  }
+  .setting-page h2{
+    color: #636060;
+    font-weight: 500;
+  }
+  .setting-form-container {
+    background: #FAFBFC;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;;
+    margin: 0 auto;
+  }
+  .edit-profile-head p {
+    position: relative;
+    color: #184E7F;
+    border-bottom: 2px solid #737373;
+    padding-bottom: 5px;
+    width: 100%;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: large;
+  }
+  
+  .edit-profile-head p span::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: fit-content;
+    height: 3px;
+    background-color: #737373;
+    width: 50px;
+  }
+  .setting-form h3 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 2px;;
+    color: #5E5E5E;
+  }
+  
+  .input-with-icon {
+    position: relative;
+  }
+  
+  .input-with-icon input {
+    width: 40%;
+    padding: 10px 35px 10px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    
+  }
+  
+  .input-with-icon .info-icon {
+    position: absolute;
+    left: 41%;
+    top: 50%;
+    transform: translateY(-10px);
+    background: #eee;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .save-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+  
+  
+  .save-button {
+    background-color: #184E7F;
+    color: #fff;
+    padding: 8px 45px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 1rem;
+    justify-content: end;
+  }
+  
+  .save-button:hover {
+    background-color: #053b70;
+  }
+  
+ 

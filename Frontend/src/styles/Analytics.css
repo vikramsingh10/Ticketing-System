@@ -1,0 +1,95 @@
+.analytics-container {
+  color: #2e2e2e;
+  font-family: "Segoe UI", sans-serif;
+  width: 60%;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  color: #00d907;
+  margin-bottom: 1rem;
+}
+h3 {
+  color: #00c853;
+  margin-bottom: 20px;
+}
+h4 {
+  margin-bottom: 20px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.stat-description {
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.green {
+  color: #00c853;
+}
+
+.circular-chart {
+  max-width: 80px;
+  max-height: 80px;
+  margin-top: 1rem;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: #00c853;
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+.circle-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 80px;
+  height: 80px;
+}
+
+.percentage {
+  fill: #00c853;
+  font-size: 0.5em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.total,
+.average,
+.resolved {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
