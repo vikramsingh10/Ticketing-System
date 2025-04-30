@@ -17,7 +17,7 @@ const app = express();
 // List of allowed origins (both local and deployed frontend URLs)
 const allowedOrigins = [
   "http://localhost:5173", // Local development
-  "https://ticketing-system-99pkq43v3-vikramsingh10s-projects.vercel.app", // Vercel deployed frontend URL
+  "https://ticketing-system-fz0gfsh05-vikramsingh10s-projects.vercel.app/", // Vercel deployed frontend URL
 ];
 
 // CORS options configuration
