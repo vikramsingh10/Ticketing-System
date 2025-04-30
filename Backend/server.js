@@ -13,7 +13,27 @@ dotenv.config({ path: "./.env" });
 connectDB();
 
 const app = express();
-app.use(cors());
+
+// List of allowed origins (both local and deployed frontend URLs)
+const allowedOrigins = [
+  "http://localhost:5173", // Local development
+  "https://ticketing-system-99pkq43v3-vikramsingh10s-projects.vercel.app", // Vercel deployed frontend URL
+];
+
+// CORS options configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      // Allow localhost during local testing
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow cookies and other credentials
+};
+
+app.use(cors(corsOptions)); // Apply CORS to the app
 app.use(express.json());
 
 app.use("/api/team", teamRoutes);
@@ -23,11 +43,12 @@ app.use("/api/tickets", ticketRoutes);
 // Create HTTP server
 const server = http.createServer(app);
 
-// Create Socket.IO server
+// Create Socket.IO server with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Adjust based on your frontend port/domain
+    origin: allowedOrigins, // Allow connections from both local and deployed frontend
     methods: ["GET", "POST"],
+    credentials: true, // Allow credentials for Socket.IO (cookies, etc.)
   },
 });
 
