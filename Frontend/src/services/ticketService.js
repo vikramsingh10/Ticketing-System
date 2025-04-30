@@ -11,7 +11,7 @@ export const getAllTickets = async () => {
     console.log("Fetched tickets:", tickets);
     return tickets;
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching tickets:", error);
     throw new Error("Error fetching tickets");
   }
 };
@@ -31,7 +31,7 @@ export const addTicket = async (newTicket) => {
     console.log("Ticket added successfully:", ticket);
     return ticket;
   } catch (error) {
-    console.error(error);
+    console.error("Error adding ticket:", error);
     throw new Error("Error adding ticket");
   }
 };
@@ -42,9 +42,10 @@ export const getTicketById = async (ticketId) => {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
     if (!response.ok) throw new Error("Failed to fetch ticket");
-    return response.json();
+    const ticket = await response.json();
+    return ticket;
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching ticket:", error);
     throw new Error("Error fetching ticket");
   }
 };
@@ -63,9 +64,11 @@ export const addMessageToTicket = async (ticketId, updatedMessages) => {
       }
     );
     if (!response.ok) throw new Error("Failed to add message to ticket");
-    return response.json();
+    const updatedTicket = await response.json();
+    console.log("Message added to ticket:", updatedTicket);
+    return updatedTicket;
   } catch (error) {
-    console.error(error);
+    console.error("Error adding message to ticket:", error);
     throw new Error("Error adding message to ticket");
   }
 };
@@ -81,9 +84,11 @@ export const updateTicketStatusAPI = async (ticketId, newStatus) => {
       body: JSON.stringify({ status: newStatus }),
     });
     if (!response.ok) throw new Error("Failed to update ticket status");
-    return response.json();
+    const updatedTicket = await response.json();
+    console.log("Ticket status updated:", updatedTicket);
+    return updatedTicket;
   } catch (error) {
-    console.error(error);
+    console.error("Error updating ticket status:", error);
     throw new Error("Error updating ticket status");
   }
 };
@@ -97,9 +102,11 @@ export const deleteTicket = async (ticketId) => {
       },
     });
     if (!response.ok) throw new Error("Failed to delete ticket");
-    return await response.json();
+    const deletedTicket = await response.json();
+    console.log("Ticket deleted successfully:", deletedTicket);
+    return deletedTicket;
   } catch (error) {
-    console.error(error);
+    console.error("Error deleting ticket:", error);
     throw new Error("Error deleting ticket");
   }
 };
@@ -116,9 +123,11 @@ export const assignTicket = async (ticketId, teamMemberId) => {
     });
 
     if (!response.ok) throw new Error("Failed to assign ticket");
-    return response.json();
+    const updatedTicket = await response.json();
+    console.log("Ticket assigned successfully:", updatedTicket);
+    return updatedTicket;
   } catch (error) {
-    console.error(error);
+    console.error("Error assigning ticket:", error);
     throw new Error("Error assigning ticket");
   }
 };

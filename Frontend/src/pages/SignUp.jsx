@@ -38,31 +38,46 @@ const Signup = () => {
       agreeToTerms,
     } = formData;
 
+    // Basic field validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
       setError("All fields are required.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
       return;
     }
 
+    // Password validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 6 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+      );
+      return;
+    }
+
+    // Password match validation
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
+    // Terms and conditions validation
     if (!agreeToTerms) {
       setError("You must agree to the Terms of Use and Privacy Policy.");
       return;
     }
 
     try {
-      const result = await signup(firstName, lastName, email, password); 
+      const result = await signup(firstName, lastName, email, password);
       if (result.success) {
         setMessage("Account created successfully! Redirecting...");
-        setTimeout(() => navigate("/dashboard"), 2000); 
+        setTimeout(() => navigate("/dashboard"), 2000);
       } else {
         setError(result.message || "Signup failed. Please try again.");
       }

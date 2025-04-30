@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSocket } from "../contexts/SocketContext";
 import {
   getAllTickets,
   getTicketById,
@@ -14,35 +15,38 @@ const ContactCenter = () => {
   const [ticket, setTicket] = useState(null);
   const [message, setMessage] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showAssignConfirm, setShowAssignConfirm] = useState(false); // New state for assignment confirmation
   const [pendingStatus, setPendingStatus] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState(
     localStorage.getItem("selectedTicketId") || ""
   );
+  const [selectedMemberId, setSelectedMemberId] = useState(""); // New state for selected team member
   const [error, setError] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const socket = useSocket();
 
+  // Fetch tickets from the backend
   const fetchTickets = async () => {
     try {
       const fetchedTickets = await getAllTickets();
       setTickets(fetchedTickets);
+
+      // Set first ticket as default if none selected
+      if (!selectedTicketId && fetchedTickets.length > 0) {
+        const firstId = fetchedTickets[0]._id;
+        setSelectedTicketId(firstId);
+        localStorage.setItem("selectedTicketId", firstId);
+      }
     } catch (err) {
       setError("Failed to fetch tickets.");
       console.error("Error fetching tickets:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchTicket = async () => {
-    if (!selectedTicketId) return;
-
-    try {
-      const fetchedTicket = await getTicketById(selectedTicketId);
-      setTicket(fetchedTicket);
-    } catch (err) {
-      setError("Failed to fetch ticket.");
-      console.error("Error fetching ticket:", err);
-    }
-  };
-
+  // Fetch all team members
   const fetchTeamMembers = async () => {
     try {
       const members = await getAllTeamMembers();
@@ -58,32 +62,59 @@ const ContactCenter = () => {
   }, []);
 
   useEffect(() => {
-    fetchTicket();
-  }, [selectedTicketId]);
+    const loadTicketAndJoinRoom = async () => {
+      if (!selectedTicketId || !socket) return;
+
+      try {
+        const fetchedTicket = await getTicketById(selectedTicketId);
+        setTicket(fetchedTicket);
+        socket.emit("join_room", selectedTicketId);
+      } catch (err) {
+        console.error("Invalid ticket selected:", err);
+        setTicket(null);
+        setSelectedTicketId("");
+        localStorage.removeItem("selectedTicketId");
+      }
+    };
+
+    loadTicketAndJoinRoom();
+
+    socket?.on("receive_message", (message) => {
+      // Only add non-bot messages to the Contact Center view
+      if (message.sender !== "chatbot") {
+        setTicket((prevTicket) => ({
+          ...prevTicket,
+          messages: [...(prevTicket?.messages || []), message],
+        }));
+      }
+    });
+
+    socket?.on("session_closed", () => {
+      alert("Chat session has been closed.");
+    });
+
+    return () => {
+      socket?.off("receive_message");
+      socket?.off("session_closed");
+    };
+  }, [selectedTicketId, socket]);
 
   const handleSendMessage = async () => {
     if (!message.trim()) return;
 
     const newMessage = { content: message, sender: "admin" };
-    const updatedMessages = [...ticket.messages, newMessage];
 
     try {
-      await addMessageToTicket(selectedTicketId, updatedMessages);
-      setTicket((prevTicket) => ({
-        ...prevTicket,
-        messages: updatedMessages,
-      }));
+      // Emit the message via Socket.IO
+      if (socket) {
+        socket.emit("send_message", {
+          ticketId: selectedTicketId,
+          message: newMessage,
+        });
+      }
+
+      // Clear the message input field
       setMessage("");
-
-      // Simulate chatbot response
-      const botMessage = { content: "This is a bot response.", sender: "chatbot" };
-      const updatedMessagesWithBot = [...updatedMessages, botMessage];
-
-      await addMessageToTicket(selectedTicketId, updatedMessagesWithBot);
-      setTicket((prevTicket) => ({
-        ...prevTicket,
-        messages: updatedMessagesWithBot,
-      }));
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -111,6 +142,7 @@ const ContactCenter = () => {
       setTicket((prevTicket) => ({ ...prevTicket, status: "resolved" }));
       setShowConfirm(false);
       setPendingStatus(null);
+      socket.emit("close_session", selectedTicketId);
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -121,17 +153,32 @@ const ContactCenter = () => {
     setPendingStatus(null);
   };
 
-  const handleAssignTeammate = async (memberId) => {
+  const handleAssignTeammate = (memberId) => {
+    if (memberId !== ticket.assignedTo?._id) {
+      setSelectedMemberId(memberId);
+      setShowAssignConfirm(true);
+    }
+  };
+
+  const confirmAssignTeammate = async () => {
     try {
-      const updatedTicket = await assignTicket(ticket._id, memberId);
+      const updatedTicket = await assignTicket(ticket._id, selectedMemberId);
       setTicket(updatedTicket);
+      setShowAssignConfirm(false);
+      setSelectedMemberId("");
     } catch (err) {
       console.error("Error assigning teammate:", err);
     }
   };
 
+  const cancelAssignTeammate = () => {
+    setShowAssignConfirm(false);
+    setSelectedMemberId("");
+  };
+
   if (error) return <p>{error}</p>;
-  if (!ticket) return <p>Loading...</p>;
+  if (loading) return <p>Loading tickets...</p>;
+  if (!ticket) return <p>There are no Tickets.</p>;
 
   return (
     <div className="contact-center-container">
@@ -155,8 +202,7 @@ const ContactCenter = () => {
               onClick={() => {
                 setSelectedTicketId(ticket._id);
                 localStorage.setItem("selectedTicketId", ticket._id);
-              }}
-            >
+              }}>
               <img src="/assets/img.png" alt="avatar" className="avatar" />
               <div>
                 <p>Chat {ticket._id.split("-")[1]}</p>
@@ -170,15 +216,17 @@ const ContactCenter = () => {
       <div className="chat-windows">
         <h3>Ticket# {ticket.ticketNumber || ticket._id}</h3>
         <div className="chat-msgs">
-          {ticket.messages?.map((msg, idx) => (
-            <div
-              key={idx}
-              className={msg.sender === "admin" ? "admin-msg" : "user-msg"}
-            >
-              {msg.content}
-            </div>
-          ))}
+          {ticket.messages
+            ?.filter((msg) => msg.sender !== "chatbot") // Filter out chatbot messages
+            .map((msg, idx) => (
+              <div
+                key={idx}
+                className={msg.sender === "admin" ? "admin-msg" : "user-msg"}>
+                {msg.content}
+              </div>
+            ))}
         </div>
+
         <div className="message-input-wrapper">
           <input
             className="chat-inputs"
@@ -188,10 +236,10 @@ const ContactCenter = () => {
           />
           <span
             className="material-symbols--send"
-            onClick={handleSendMessage}
-          ></span>
+            onClick={handleSendMessage}></span>
         </div>
       </div>
+
       <div className="ticket-info">
         <div>
           <img src="/assets/img.png" alt="avatar" className="avatar" />
@@ -235,14 +283,35 @@ const ContactCenter = () => {
         {showConfirm && pendingStatus === "resolved" && (
           <div className="confirmation-popup">
             <p>Chats will be closed. Confirm?</p>
-            <button onClick={confirmResolve}>Confirm</button>
-            <button onClick={cancelResolve}>Cancel</button>
+            <div className="button-div">
+              <button className="cancel-btn" onClick={cancelResolve}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={confirmResolve}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showAssignConfirm && (
+          <div className="confirmation-popup">
+            <p>
+              Chat will be assigned to a different team member. Confirm?
+            </p>
+            <div className="button-div">
+              <button className="cancel-btn" onClick={cancelAssignTeammate}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={confirmAssignTeammate}>
+                Confirm
+              </button>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
 };
-  
 
 export default ContactCenter;

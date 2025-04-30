@@ -50,9 +50,11 @@ const DashboardContent = () => {
     return (
       (ticket._id || "").toLowerCase().includes(search) ||
       (ticket.phone || "").toLowerCase().includes(search) ||
+      (ticket.name || "").toLowerCase().includes(search) ||
       (ticket.title || "").toLowerCase().includes(search)
     );
   });
+  
   const API_BASE_URL = "http://localhost:5000/api";
 
   const handleDelete = async (_id) => {
