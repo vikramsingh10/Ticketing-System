@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import {
-  getAllTickets,
-  getToken,
-  deleteTicket,
-} from "../services/ticketService";
+import { getAllTickets, deleteTicket } from "../services/ticketService";
 
 const DashboardContent = () => {
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("Unresolved");
   const [tickets, setTickets] = useState([]);
+  const [timeElapsed, setTimeElapsed] = useState({});
   const navigate = useNavigate();
 
   const fetchTickets = async () => {
@@ -22,29 +19,54 @@ const DashboardContent = () => {
     }
   };
 
-  const refreshTickets = () => {
-    fetchTickets();
-  };
-
   useEffect(() => {
     fetchTickets();
   }, []);
 
   const openTicket = (ticketId) => {
-    console.log("Opening ticket with ID:", ticketId);
     if (ticketId) {
       localStorage.setItem("selectedTicketId", ticketId);
       navigate("/contact-center");
-    } else {
-      console.error("Ticket ID is undefined or null");
     }
   };
+
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const getTimeSpent = (isoString) => {
+    const now = new Date();
+    const createdAt = new Date(isoString);
+    const diffMs = now - createdAt;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs / (1000 * 60)) % 60);
+    return `${diffHours}:${diffMinutes.toString().padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    const updateElapsed = () => {
+      const updated = {};
+      tickets.forEach((ticket) => {
+        if (ticket.postedAt) {
+          updated[ticket._id] = getTimeSpent(ticket.postedAt);
+        }
+      });
+      setTimeElapsed(updated);
+    };
+
+    updateElapsed(); // run once immediately
+    const interval = setInterval(updateElapsed, 30 * 60 * 1000); // every 30 min
+
+    return () => clearInterval(interval);
+  }, [tickets]);
 
   const statusFilteredTickets = tickets.filter((ticket) => {
     if (activeTab === "Resolved") return ticket.status === "resolved";
     if (activeTab === "Unresolved") return ticket.status === "unresolved";
     return true;
   });
+
   const filteredTickets = statusFilteredTickets.filter((ticket) => {
     const search = searchText.toLowerCase();
     return (
@@ -54,12 +76,11 @@ const DashboardContent = () => {
       (ticket.title || "").toLowerCase().includes(search)
     );
   });
-  
-  const API_BASE_URL = "http://localhost:5000/api";
 
   const handleDelete = async (_id) => {
     try {
       await deleteTicket(_id);
+      fetchTickets(); // Refresh list after deletion
     } catch (error) {
       console.error("Failed to delete ticket:", error);
     }
@@ -99,19 +120,23 @@ const DashboardContent = () => {
 
       {filteredTickets.length > 0 ? (
         filteredTickets.map((ticket) => {
-          if (!ticket._id) {
-            console.error("Ticket ID is missing", ticket);
-            return null;
-          }
+          if (!ticket._id) return null;
           return (
             <div key={ticket._id} className="ticket-card">
               <div className="ticket-header">
                 <span className="status-dot"></span>
                 <strong>Ticket# {ticket.ticketNumber || ticket._id}</strong>
 
-                <span className="posted-time">Posted at {ticket.postedAt}</span>
-                <span className="ticket-time">{ticket.time}</span>
+                <div className="ticket-time-info">
+                  <span className="posted-time">
+                    Posted at {formatTime(ticket.postedAt)}
+                  </span>
+                  <span className="time-spent">
+                    {timeElapsed[ticket._id] || "0:00"}
+                  </span>
+                </div>
               </div>
+
               <p className="ticket-message">{ticket.title}</p>
               <div className="ticket-footer">
                 <div className="user-info">

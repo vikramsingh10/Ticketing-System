@@ -53,6 +53,7 @@
   flex: 1;
   overflow-y: auto;
   background: #f4f7fb;
+  max-height: 100%;
 }
 
 .chatbot-message {
@@ -158,4 +159,24 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
+}
+/* Mobile View */
+@media (max-width: 600px) {
+  .chatbot-window {
+    width: 100vw;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+  }
+
+  .chatbot-footer input {
+    border-radius: 10px;
+  }
+
+  .chatbot-popup {
+    right: 15px;
+    bottom: 90px;
+    width: 90%;
+  }
 }

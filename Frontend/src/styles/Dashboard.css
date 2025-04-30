@@ -210,7 +210,48 @@
   cursor: pointer;
   padding-bottom: 4px;
 }
-.ticket-btn{
+.ticket-btn {
   display: flex;
   flex-direction: column;
+}
+.ticket-id-time {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem; /* optional spacing after status-dot */
+}
+
+.ticket-id-time {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
+  justify-content: end;
+  align-items: end;
+  text-align: end;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ticket-time-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #666;
+  flex: 1;
+}
+
+.ticket-time-info span {
+  line-height: 1.2;
+  margin: 0;
+  padding: 0;
+}
+.time-spent {
+  color: black;
+  font-weight: 700;
+  font-size: larger;
 }

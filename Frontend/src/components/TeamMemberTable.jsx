@@ -24,13 +24,13 @@ const TeamMemberTable = ({ teamMembers, handleEdit, setConfirmDeleteId }) => {
             <td>{member.role}</td>
             <td>
               <span className="edit-icon" onClick={() => handleEdit(member)}>
-                ✏️
+              <span class="ant-design--edit-outlined"></span>
               </span>
               <span
                 className="delete-icon"
                 onClick={() => setConfirmDeleteId(member._id)}
               >
-                🗑️
+                <span class="mdi--delete-outline"></span>
               </span>
             </td>
           </tr>

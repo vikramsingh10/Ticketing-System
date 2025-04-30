@@ -17,7 +17,7 @@ const TeamMemberModal = ({
           visible to its participants. New teammates may only be invited by the
           administrators.
         </p>
-
+        <label className="label" htmlFor="username">User name</label>
         <input
           type="text"
           name="name"
@@ -25,6 +25,7 @@ const TeamMemberModal = ({
           value={formData.name}
           onChange={handleChange}
         />
+        <label className="label" htmlFor="phone">Phone Number</label>
         <input
           type="text"
           name="phone"
@@ -32,6 +33,7 @@ const TeamMemberModal = ({
           value={formData.phone}
           onChange={handleChange}
         />
+        <label className="label" htmlFor="email">Email ID</label>
         <input
           type="email"
           name="email"
@@ -39,6 +41,7 @@ const TeamMemberModal = ({
           value={formData.email}
           onChange={handleChange}
         />
+        <label className="label" htmlFor="dropdown">Designation</label>
         <select name="role" value={formData.role} onChange={handleChange}>
           <option value="Member">Member</option>
           <option value="Admin">Admin</option>
