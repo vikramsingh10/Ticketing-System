@@ -7,30 +7,27 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import teamRoutes from "./routes/team.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
-import Ticket from "./models/Ticket.js"; 
+import Ticket from "./models/Ticket.js";
 
 dotenv.config({ path: "./.env" });
 connectDB();
 
 const app = express();
 
-
 const allowedOrigins = [
-  "http://localhost:5173", 
-  "https://ticketing-system-fz0gfsh05-vikramsingh10s-projects.vercel.app", 
+  "http://localhost:5173",
+  "https://ticketing-system-h7zr47k3e-vikramsingh10s-projects.vercel.app",
 ];
-
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, 
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -40,29 +37,24 @@ app.use("/api/team", teamRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tickets", ticketRoutes);
 
-
 const server = http.createServer(app);
-
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins, 
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true, 
+    credentials: true,
   },
 });
-
 
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
-  
   socket.on("join_room", (ticketId) => {
     socket.join(ticketId);
     console.log(`Socket ${socket.id} joined room ${ticketId}`);
   });
 
-  
   socket.on("send_message", async ({ ticketId, message }) => {
     try {
       const ticket = await Ticket.findById(ticketId);
@@ -91,11 +83,9 @@ io.on("connection", (socket) => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
 
-  
   socket.on("ticket_assigned", ({ ticketId, memberId }) => {
     io.to(ticketId).emit("assigned_notification", { memberId, ticketId });
   });
-
 
   socket.on("error", (error) => {
     console.error("Socket error:", error);
