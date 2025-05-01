@@ -16,7 +16,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ticketing-system-h7zr47k3e-vikramsingh10s-projects.vercel.app",
+  "https://ticketing-system-78oot6rkv-vikramsingh10s-projects.vercel.app",
 ];
 
 const corsOptions = {
