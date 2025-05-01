@@ -1,14 +1,17 @@
-const API_BASE_URL = "http://localhost:5000/api";
+
 export const getToken = () => localStorage.getItem("token");
 
 export const getAllTickets = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets`,
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
     if (!response.ok) throw new Error("Failed to fetch tickets");
     const tickets = await response.json();
-    
+
     return tickets;
   } catch (error) {
     console.error("Error fetching tickets:", error);
@@ -18,14 +21,17 @@ export const getAllTickets = async () => {
 
 export const addTicket = async (newTicket) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify(newTicket),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(newTicket),
+      }
+    );
     if (!response.ok) throw new Error("Failed to add ticket");
     const ticket = await response.json();
     console.log("Ticket added successfully:", ticket);
@@ -38,9 +44,12 @@ export const addTicket = async (newTicket) => {
 
 export const getTicketById = async (ticketId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets/${ticketId}`,
+      {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }
+    );
     if (!response.ok) throw new Error("Failed to fetch ticket");
     const ticket = await response.json();
     return ticket;
@@ -75,14 +84,17 @@ export const addMessageToTicket = async (ticketId, updatedMessages) => {
 
 export const updateTicketStatusAPI = async (ticketId, newStatus) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets/${ticketId}/status`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      }
+    );
     if (!response.ok) throw new Error("Failed to update ticket status");
     const updatedTicket = await response.json();
     console.log("Ticket status updated:", updatedTicket);
@@ -95,12 +107,15 @@ export const updateTicketStatusAPI = async (ticketId, newStatus) => {
 
 export const deleteTicket = async (ticketId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets/${ticketId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      }
+    );
     if (!response.ok) throw new Error("Failed to delete ticket");
     const deletedTicket = await response.json();
     console.log("Ticket deleted successfully:", deletedTicket);
@@ -113,14 +128,17 @@ export const deleteTicket = async (ticketId) => {
 
 export const assignTicket = async (ticketId, teamMemberId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}/assign`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
-      },
-      body: JSON.stringify({ teamMemberId }),
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/tickets/${ticketId}/assign`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ teamMemberId }),
+      }
+    );
 
     if (!response.ok) throw new Error("Failed to assign ticket");
     const updatedTicket = await response.json();

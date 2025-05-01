@@ -1,7 +1,7 @@
-const API_URL = "http://localhost:5000/api/team";
+
 
 export const getAllTeamMembers = async () => {
-  const response = await fetch(API_URL);
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/team`);
   if (!response.ok) throw new Error("Failed to fetch team members");
   return response.json();
 };
@@ -12,7 +12,7 @@ export const addTeamMember = async (newMember) => {
     throw new Error("A member with this email or phone number already exists.");
   }
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/team`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newMember),
@@ -22,7 +22,9 @@ export const addTeamMember = async (newMember) => {
 };
 
 export const deleteTeamMember = async (id) => {
-  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/team/${id}`, {
+    method: "DELETE",
+  });
   if (!res.ok) throw new Error("Failed to delete team member");
   return res.json();
 };
@@ -33,7 +35,7 @@ export const updateTeamMember = async (id, data) => {
     throw new Error("A member with this email or phone number already exists.");
   }
 
-  const res = await fetch(`${API_URL}/${id}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/team/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
