@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext();
@@ -10,7 +16,9 @@ const SocketProvider = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000");
+    socketRef.current = io("http://localhost:5000", {
+      withCredentials: true,
+    });
     setIsReady(true);
 
     return () => {
