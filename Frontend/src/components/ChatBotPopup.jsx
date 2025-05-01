@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import "../styles/ChatBotPopup.css";
 import { addTicket } from "../services/ticketService";
 import { useSocket } from "../contexts/SocketContext";
+import { useChatBotSettings } from "../contexts/ChatBotSettingsContext";
 
-const ChatBotPopup = ({
-  
-}) => {
+const ChatBotPopup = () => {
+  const { settings } = useChatBotSettings();
+  const socket = useSocket();
+
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isWelcomeVisible, setIsWelcomeVisible] = useState(true);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(
+    settings.messages.map((msg) => ({ content: msg, sender: "chatbot" }))
+  );
   const [firstMessageContent, setFirstMessageContent] = useState("");
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [userDetails, setUserDetails] = useState({
@@ -27,8 +31,6 @@ const ChatBotPopup = ({
     email: "",
   });
 
-  const socket = useSocket();
-
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
     setIsWelcomeVisible(false);
@@ -41,18 +43,15 @@ const ChatBotPopup = ({
     const message = currentInput.trim();
     const newMsg = { content: message, sender: "user" };
 
-    // Emit the user's message to the backend
     if (socket) {
       socket.emit("send_message", {
         message: newMsg,
-        ticketId: ticketId, // Ensure ticketId is being passed
+        ticketId,
       });
     }
-
-    // Update the messages state with the user's message
+    
     setMessages((prevMessages) => [...prevMessages, newMsg]);
 
-    // If it's the first message, handle the form and chatbot prompt
     if (!firstMessageContent) {
       setFirstMessageContent(message);
       setIsFormVisible(true);
@@ -67,16 +66,20 @@ const ChatBotPopup = ({
         if (socket) {
           socket.emit("send_message", {
             message: chatbotMessage,
-            ticketId: ticketId,
+            ticketId,
           });
         }
       }, 500);
     }
 
-    // Track if waiting for response from contact center
     setIsWaitingForResponse(true);
 
-    // Start a timer for 1 minute to check if no response is received
+    const timeoutDuration =
+      (settings.missedChatTimer.hours * 3600 +
+        settings.missedChatTimer.minutes * 60 +
+        settings.missedChatTimer.seconds) *
+      1000;
+
     const id = setTimeout(() => {
       if (isWaitingForResponse && !responseReceived) {
         const chatbotMessage = {
@@ -88,33 +91,27 @@ const ChatBotPopup = ({
         if (socket) {
           socket.emit("send_message", {
             message: chatbotMessage,
-            ticketId: ticketId,
+            ticketId,
           });
         }
 
-        setResponseReceived(true); // Set this flag to true after sending the message
+        setResponseReceived(true);
       }
-    }, 60000); // 1 minute = 60000 ms
+    }, timeoutDuration || 60000);
 
-    setTimeoutId(id); // Save the timeoutId for clearing it later
-
-    // Clear input field after sending the message
+    setTimeoutId(id);
     setCurrentInput("");
   };
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
 
-    // Perform validation before submitting the form
     const validationErrors = {};
-
-    // Phone number validation (simple example: only digits, length 10)
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(userDetails.phone)) {
       validationErrors.phone = "Please enter a valid phone number (10 digits).";
     }
 
-    // Email validation (basic validation using regex)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userDetails.email)) {
       validationErrors.email = "Please enter a valid email address.";
@@ -128,8 +125,9 @@ const ChatBotPopup = ({
     const newTicket = {
       ...userDetails,
       title: firstMessageContent,
-      description: firstMessageContent,
+     
       status: "unresolved",
+      messages: [...messages, firstMessageContent]
     };
 
     try {
@@ -137,11 +135,9 @@ const ChatBotPopup = ({
       setIsFormVisible(false);
       setTicketId(savedTicket._id);
 
-      // 👇 join the ticket room (check if socket exists)
       if (socket) {
         socket.emit("join_room", savedTicket._id);
-
-        // 👇 send initial message via socket
+        
         const firstMsg = {
           content: firstMessageContent,
           sender: "user",
@@ -152,17 +148,8 @@ const ChatBotPopup = ({
           ticketId: savedTicket._id,
           message: firstMsg,
         });
-      } else {
-        console.warn("Socket not connected. Cannot emit events.");
       }
-
-      // 👇 save message locally
-      const firstMsg = {
-        content: firstMessageContent,
-        sender: "user",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, firstMsg]);
+       
     } catch (error) {
       console.error("Error submitting ticket:", error);
     }
@@ -189,12 +176,20 @@ const ChatBotPopup = ({
       socket.off("session_closed");
     };
   }, [socket, ticketId]);
-
+  useEffect(() => {
+    const initialMsgs = settings.messages.map((msg) => ({
+      content: msg,
+      sender: "chatbot",
+    }));
+    setMessages(initialMsgs);
+  }, [settings.messages]);
   return (
     <>
       {isChatOpen && (
         <div className="chatbot-window">
-          <div className="chatbot-header">
+          <div
+            className="chatbot-header"
+            style={{ backgroundColor: settings.headerColor }}>
             <div className="chatbot-header-left">
               <img
                 src="./assets/bot-icon.png"
@@ -208,7 +203,9 @@ const ChatBotPopup = ({
             </button>
           </div>
 
-          <div className="chatbot-body">
+          <div
+            className="chatbot-body"
+            style={{ backgroundColor: settings.backgroundColor }}>
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -230,7 +227,7 @@ const ChatBotPopup = ({
                   <h4>Introduce Yourself</h4>
                   <input
                     type="text"
-                    placeholder="Your name"
+                    placeholder={settings.formFields.name}
                     value={userDetails.name}
                     onChange={(e) =>
                       setUserDetails({ ...userDetails, name: e.target.value })
@@ -238,24 +235,22 @@ const ChatBotPopup = ({
                   />
                   <input
                     type="text"
-                    placeholder="Your Phone"
+                    placeholder={settings.formFields.phone}
                     value={userDetails.phone}
                     onChange={(e) =>
                       setUserDetails({ ...userDetails, phone: e.target.value })
                     }
                   />
                   {errors.phone && <p className="error-text">{errors.phone}</p>}
-
                   <input
                     type="email"
-                    placeholder="Your Email"
+                    placeholder={settings.formFields.email}
                     value={userDetails.email}
                     onChange={(e) =>
                       setUserDetails({ ...userDetails, email: e.target.value })
                     }
                   />
                   {errors.email && <p className="error-text">{errors.email}</p>}
-
                   <button className="submit-btn" onClick={handleSubmitForm}>
                     Submit
                   </button>
@@ -265,7 +260,7 @@ const ChatBotPopup = ({
           </div>
 
           <div className="chatbot-footer">
-            <form onSubmit={handleSendMessage} style={{ display: "flex" }}>
+            <form onSubmit={(e)=>handleSendMessage(e)} style={{ display: "flex" }}>
               <input
                 type="text"
                 placeholder="Write a message"
@@ -295,10 +290,7 @@ const ChatBotPopup = ({
             </button>
           </div>
           <div className="chatbot-body-popup">
-            <p>
-              👋 Want to chat about Hubly? I'm a chatbot here to help you find
-              your way.
-            </p>
+            <p>{settings.welcomeMessage}</p>
           </div>
         </div>
       )}

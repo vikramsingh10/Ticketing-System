@@ -8,7 +8,7 @@ export const getAllTickets = async () => {
     });
     if (!response.ok) throw new Error("Failed to fetch tickets");
     const tickets = await response.json();
-    console.log("Fetched tickets:", tickets);
+    
     return tickets;
   } catch (error) {
     console.error("Error fetching tickets:", error);

@@ -35,7 +35,6 @@ const Setting = () => {
 
       if (response.ok) {
         alert("Profile updated successfully!");
-        console.log(data);
       } else {
         alert(data.message || "Failed to update profile");
       }

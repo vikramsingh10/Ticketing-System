@@ -6,7 +6,7 @@ import Counter from "../models/Counter.js";
 
 export const createTicket = async (req, res) => {
   try {
-    const { title, description, assignedTo, name, phone, email } = req.body;
+    const { title, assignedTo, name, phone, email } = req.body;
 
     let assignedMemberId = null;
     if (assignedTo) {
@@ -40,7 +40,7 @@ export const createTicket = async (req, res) => {
 
     const newTicket = new Ticket({
       title,
-      description,
+      
       assignedTo: assignedMemberId,
       createdBy: req.user?._id,
       name,

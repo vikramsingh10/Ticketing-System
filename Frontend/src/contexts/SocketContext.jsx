@@ -10,7 +10,7 @@ const SocketProvider = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000"); // or your actual backend URL
+    socketRef.current = io("http://localhost:5000");
     setIsReady(true);
 
     return () => {

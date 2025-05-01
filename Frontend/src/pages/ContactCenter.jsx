@@ -15,12 +15,12 @@ const ContactCenter = () => {
   const [ticket, setTicket] = useState(null);
   const [message, setMessage] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showAssignConfirm, setShowAssignConfirm] = useState(false); // New state for assignment confirmation
+  const [showAssignConfirm, setShowAssignConfirm] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null);
   const [selectedTicketId, setSelectedTicketId] = useState(
     localStorage.getItem("selectedTicketId") || ""
   );
-  const [selectedMemberId, setSelectedMemberId] = useState(""); // New state for selected team member
+  const [selectedMemberId, setSelectedMemberId] = useState("");
   const [error, setError] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -296,9 +296,7 @@ const ContactCenter = () => {
 
         {showAssignConfirm && (
           <div className="confirmation-popup">
-            <p>
-              Chat will be assigned to a different team member. Confirm?
-            </p>
+            <p>Chat will be assigned to a different team member. Confirm?</p>
             <div className="button-div">
               <button className="cancel-btn" onClick={cancelAssignTeammate}>
                 Cancel

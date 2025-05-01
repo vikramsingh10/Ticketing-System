@@ -1,89 +1,91 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import "../styles/ChatBotCustomize.css";
+import { useChatBotSettings } from "../contexts/ChatBotSettingsContext";
 
-const ChatBotCustomize = ({ setHeaderColor, setBgColor, setMessages, setFormPlaceholders, setWelcomeMessage }) => {
-  const [headerColor, setHeaderColorState] = useState("#33475B");
-  const [bgColor, setBgColorState] = useState("#EEEEEE");
-  const [customMessage1, setCustomMessage1] = useState("How can I help you?");
-  const [customMessage2, setCustomMessage2] = useState("Ask me anything!");
-  const [formPlaceholderName, setFormPlaceholderName] = useState("Your name");
-  const [formPlaceholderPhone, setFormPlaceholderPhone] = useState("+1 (000) 000-0000");
-  const [formPlaceholderEmail, setFormPlaceholderEmail] = useState("example@gmail.com");
-  const [welcomeMessage, setWelcomeMessageState] = useState("👋 Want to chat about Hubly? I'm a chatbot here to help you find your way.");
+const ChatBotCustomize = () => {
+  const { settings, setSettings } = useChatBotSettings();
 
-  const handleHeaderColorChange = (color) => {
-    setHeaderColorState(color);
-    setHeaderColor(color);
+  const handleColorChange = (field, value) => {
+    setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleBgColorChange = (color) => {
-    setBgColorState(color);
-    setBgColor(color);
+  const handleMessageChange = (index, value) => {
+    const updatedMessages = [...settings.messages];
+    updatedMessages[index] = value;
+    setSettings((prev) => ({ ...prev, messages: updatedMessages }));
   };
 
-  const handleCustomMessageChange = (message, index) => {
-    if (index === 1) {
-      setCustomMessage1(message);
-      setMessages(prev => prev.map(msg => msg.index === 1 ? { ...msg, content: message } : msg));
-    } else if (index === 2) {
-      setCustomMessage2(message);
-      setMessages(prev => prev.map(msg => msg.index === 2 ? { ...msg, content: message } : msg));
-    }
+  const addMessage = () => {
+    setSettings((prev) => ({
+      ...prev,
+      messages: [...prev.messages, ""],
+    }));
   };
 
-  const handleFormPlaceholderChange = (field, value) => {
-    if (field === 'name') {
-      setFormPlaceholderName(value);
-      setFormPlaceholders(prev => ({ ...prev, name: value }));
-    } else if (field === 'phone') {
-      setFormPlaceholderPhone(value);
-      setFormPlaceholders(prev => ({ ...prev, phone: value }));
-    } else if (field === 'email') {
-      setFormPlaceholderEmail(value);
-      setFormPlaceholders(prev => ({ ...prev, email: value }));
-    }
+  const removeMessage = (index) => {
+    const updatedMessages = settings.messages.filter((_, i) => i !== index);
+    setSettings((prev) => ({ ...prev, messages: updatedMessages }));
   };
 
-  const handleWelcomeMessageChange = (message) => {
-    setWelcomeMessageState(message);
-    setWelcomeMessage(message);
+  const handleFormFieldChange = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      formFields: { ...prev.formFields, [field]: value },
+    }));
   };
+
+  const handleWelcomeChange = (value) => {
+    setSettings((prev) => ({ ...prev, welcomeMessage: value }));
+  };
+
+  const handleTimerChange = (field, value) => {
+    setSettings((prev) => ({
+      ...prev,
+      missedChatTimer: {
+        ...prev.missedChatTimer,
+        [field]: parseInt(value) || 0,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    localStorage.setItem("chatbot-settings", JSON.stringify(settings));
+  }, [settings]);
 
   return (
     <div className="chatbot-page">
       <div className="chatbot-preview">
-        <div className="chat-window" style={{ backgroundColor: bgColor }}>
-          <div className="chat-header" style={{ backgroundColor: headerColor }}>Hubly</div>
-          <div className="chat-body">
-            <div className="chat-message">{customMessage1}</div>
-            <div className="chat-message">{customMessage2}</div>
+        <div className="chat-window">
+          <div
+            className="chat-header"
+            style={{ backgroundColor: settings.headerColor }}>
+            Hubly
+          </div>
+          <div
+            className="chat-body"
+            style={{ backgroundColor: settings.backgroundColor }}>
+            {settings.messages.map((msg, idx) => (
+              <div className="chat-message" key={idx}>
+                {msg}
+              </div>
+            ))}
             <div className="chat-form">
-              <p><strong>Introduce Yourself</strong></p>
-              <input
-                type="text"
-                value={formPlaceholderName}
-                onChange={(e) => handleFormPlaceholderChange('name', e.target.value)}
-                placeholder={formPlaceholderName}
-              />
-              <input
-                type="text"
-                value={formPlaceholderPhone}
-                onChange={(e) => handleFormPlaceholderChange('phone', e.target.value)}
-                placeholder={formPlaceholderPhone}
-              />
-              <input
-                type="email"
-                value={formPlaceholderEmail}
-                onChange={(e) => handleFormPlaceholderChange('email', e.target.value)}
-                placeholder={formPlaceholderEmail}
-              />
+              <p>
+                <strong>Introduce Yourself</strong>
+              </p>
+              <input type="text" placeholder={settings.formFields.name} />
+              <input type="text" placeholder={settings.formFields.phone} />
+              <input type="email" placeholder={settings.formFields.email} />
               <button className="btn">Thank You!</button>
             </div>
           </div>
-          <div className="chat-input-bar">Write a message <span>📩</span></div>
+          <div className="chat-input-bar">
+            Write a message <span>📩</span>
+          </div>
         </div>
+
         <div className="welcome-popup">
-          {welcomeMessage}
+          {settings.welcomeMessage}
           <span className="popup-close">×</span>
         </div>
       </div>
@@ -91,68 +93,62 @@ const ChatBotCustomize = ({ setHeaderColor, setBgColor, setMessages, setFormPlac
       <div className="chatbot-controls">
         <div className="control-section">
           <h3>Header Color</h3>
-          <div className="color-options">
-            <div
-              className="color white"
-              onClick={() => handleHeaderColorChange('white')}
-            ></div>
-            <div
-              className="color black"
-              onClick={() => handleHeaderColorChange('black')}
-            ></div>
-            <div
-              className="color blue"
-              onClick={() => handleHeaderColorChange('#33475B')}
-            ></div>
-            <input type="text" value={headerColor} readOnly />
-          </div>
+          <input
+            type="color"
+            value={settings.headerColor}
+            onChange={(e) => handleColorChange("headerColor", e.target.value)}
+          />
+          <input type="text" value={settings.headerColor} readOnly />
         </div>
 
         <div className="control-section">
-          <h3>Custom Background Color</h3>
-          <div className="color-options">
-            <div
-              className="color white"
-              onClick={() => handleBgColorChange('white')}
-            ></div>
-            <div
-              className="color black"
-              onClick={() => handleBgColorChange('black')}
-            ></div>
-            <input type="text" value={bgColor} readOnly />
-          </div>
+          <h3>Background Color</h3>
+          <input
+            type="color"
+            value={settings.backgroundColor}
+            onChange={(e) =>
+              handleColorChange("backgroundColor", e.target.value)
+            }
+          />
+          <input type="text" value={settings.backgroundColor} readOnly />
         </div>
 
         <div className="control-section">
           <h3>Customize Message</h3>
-          <input
-            type="text"
-            value={customMessage1}
-            onChange={(e) => handleCustomMessageChange(e.target.value, 1)}
-          />
-          <input
-            type="text"
-            value={customMessage2}
-            onChange={(e) => handleCustomMessageChange(e.target.value, 2)}
-          />
+          {settings.messages.map((msg, index) => (
+            <div key={index} style={{ display: "flex", gap: "5px" }}>
+              <input
+                type="text"
+                value={msg}
+                onChange={(e) => handleMessageChange(index, e.target.value)}
+              />
+              <button onClick={() => removeMessage(index)}>❌</button>
+            </div>
+          ))}
+          <button onClick={addMessage} className="btn">
+            ➕ Add Message
+          </button>
         </div>
 
         <div className="control-section">
           <h3>Introduction Form</h3>
           <input
             type="text"
-            value={formPlaceholderName}
-            onChange={(e) => handleFormPlaceholderChange('name', e.target.value)}
+            placeholder="Name"
+            value={settings.formFields.name}
+            onChange={(e) => handleFormFieldChange("name", e.target.value)}
           />
           <input
             type="text"
-            value={formPlaceholderPhone}
-            onChange={(e) => handleFormPlaceholderChange('phone', e.target.value)}
+            placeholder="Phone"
+            value={settings.formFields.phone}
+            onChange={(e) => handleFormFieldChange("phone", e.target.value)}
           />
           <input
             type="text"
-            value={formPlaceholderEmail}
-            onChange={(e) => handleFormPlaceholderChange('email', e.target.value)}
+            placeholder="Email"
+            value={settings.formFields.email}
+            onChange={(e) => handleFormFieldChange("email", e.target.value)}
           />
           <button className="btn">Thank You!</button>
         </div>
@@ -161,9 +157,33 @@ const ChatBotCustomize = ({ setHeaderColor, setBgColor, setMessages, setFormPlac
           <h3>Welcome Message</h3>
           <textarea
             rows="3"
-            value={welcomeMessage}
-            onChange={(e) => handleWelcomeMessageChange(e.target.value)}
+            value={settings.welcomeMessage}
+            onChange={(e) => handleWelcomeChange(e.target.value)}
           />
+        </div>
+
+        <div className="control-section">
+          <h3>Missed Chat Timer</h3>
+          <div className="timer-inputs">
+            <input
+              type="number"
+              value={settings.missedChatTimer.hours}
+              onChange={(e) => handleTimerChange("hours", e.target.value)}
+            />{" "}
+            :{" "}
+            <input
+              type="number"
+              value={settings.missedChatTimer.minutes}
+              onChange={(e) => handleTimerChange("minutes", e.target.value)}
+            />{" "}
+            :{" "}
+            <input
+              type="number"
+              value={settings.missedChatTimer.seconds}
+              onChange={(e) => handleTimerChange("seconds", e.target.value)}
+            />
+          </div>
+          <button className="btn">Save</button>
         </div>
       </div>
     </div>

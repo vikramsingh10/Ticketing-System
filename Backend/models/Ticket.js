@@ -9,7 +9,7 @@ const messageSchema = new mongoose.Schema({
 const ticketSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    
     name: { type: String, required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },

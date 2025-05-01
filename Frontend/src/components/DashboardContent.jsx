@@ -80,7 +80,7 @@ const DashboardContent = () => {
   const handleDelete = async (_id) => {
     try {
       await deleteTicket(_id);
-      fetchTickets(); // Refresh list after deletion
+      fetchTickets(); 
     } catch (error) {
       console.error("Failed to delete ticket:", error);
     }

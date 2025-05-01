@@ -3,12 +3,16 @@ import "./App.css";
 import AppRoutes from "./routes/AppRoutes";
 import AuthProvider from "./contexts/authContext";
 import SocketProvider from "./contexts/SocketContext";
+import { ChatBotSettingsProvider } from "./contexts/ChatBotSettingsContext";
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
-          <AppRoutes />
+          <ChatBotSettingsProvider>
+            <AppRoutes />
+          </ChatBotSettingsProvider>
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
